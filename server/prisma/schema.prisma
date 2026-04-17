@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  firstLogin   Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+model Appointment {
+  id              String   @id @default(cuid())
+  patientName     String
+  phone           String
+  gender          String?
+  clinicLocation  String
+  preferredTime   String
+  status          String   @default("pending")
+  notes           String   @default("")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model AvailabilityBlock {
+  id           String    @id @default(cuid())
+  dayOfWeek    Int?
+  startTime    String
+  endTime      String
+  isRecurring  Boolean   @default(true)
+  specificDate DateTime?
+  label        String    @default("")
+}
+
+model Media {
+  id           String   @id @default(cuid())
+  filename     String
+  originalUrl  String
+  thumbnailUrl String
+  altText      String   @default("")
+  category     String   @default("Uncategorized")
+  type         String
+  size         Int
+  width        Int?
+  height       Int?
+  isFeatured   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}
+
+model GallerySettings {
+  id             String   @id @default(cuid())
+  layout         String   @default("grid")
+  columns        Int      @default(3)
+  showCaptions   Boolean  @default(true)
+  showCategories Boolean  @default(true)
+  featuredOrder  Json     @default("[]")
+  updatedAt      DateTime @updatedAt
+}
+
+model Post {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  content       Json
+  excerpt       String    @default("")
+  status        String    @default("draft")
+  publishedAt   DateTime?
+  featuredImage String?
+  metaTitle     String    @default("")
+  metaDesc      String    @default("")
+  focusKeyword  String    @default("")
+  tags          Json      @default("[]")
+  category      String    @default("General")
+  views         Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model PageSection {
+  id        String   @id @default(cuid())
+  section   String   @unique
+  content   Json
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSettings {
+  id        String   @id @default(cuid())
+  section   String   @unique
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  type      String   @unique
+  subject   String
+  body      String
+  enabled   Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  action      String
+  entity      String
+  entityId    String?
+  description String
+  createdAt   DateTime @default(now())
+}
