@@ -41,8 +41,17 @@ app.use(cookieParser())
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 
-// Serve uploaded files
-app.use('/uploads', express.static(UPLOAD_DIR))
+// Serve uploaded files with proper URL encoding handling
+app.use('/uploads', (req, res, next) => {
+  try {
+    // Decode the URL path to handle spaces and special characters
+    const decodedPath = decodeURIComponent(req.path)
+    req.url = decodedPath
+    express.static(UPLOAD_DIR)(req, res, next)
+  } catch (error) {
+    next()
+  }
+})
 
 // Routes
 app.use('/api/auth', authRoutes)

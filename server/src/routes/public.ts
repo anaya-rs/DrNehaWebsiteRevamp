@@ -10,6 +10,8 @@ import {
   getSocial,
   getEmergency,
   getAvailability,
+  getSpecialities,
+  getFaqs,
 } from '../controllers/public'
 
 const router = Router()
@@ -30,6 +32,8 @@ router.get('/settings/contact', getContact)
 router.get('/settings/clinics', getClinics)
 router.get('/settings/social', getSocial)
 router.get('/settings/emergency', getEmergency)
+router.get('/settings/specialities', getSpecialities)
+router.get('/settings/faqs', getFaqs)
 
 // Availability
 router.get('/availability', getAvailability)

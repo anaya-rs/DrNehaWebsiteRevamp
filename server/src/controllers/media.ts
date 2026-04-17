@@ -123,6 +123,46 @@ export async function patch(req: Request, res: Response): Promise<void> {
   }
 }
 
+export async function getCategories(req: Request, res: Response): Promise<void> {
+  try {
+    const categories = await prisma.media.findMany({
+      select: { category: true },
+      distinct: ['category'],
+      orderBy: { category: 'asc' }
+    })
+
+    const categoryList = categories.map(c => c.category).filter(Boolean)
+
+    res.json({ success: true, data: categoryList })
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message })
+  }
+}
+
+export async function saveCategories(req: Request, res: Response): Promise<void> {
+  try {
+    const { categories } = req.body
+
+    if (!Array.isArray(categories)) {
+      res.status(400).json({ success: false, error: 'categories must be an array' })
+      return
+    }
+
+    // Store categories in site settings
+    const settings = await prisma.siteSettings.upsert({
+      where: { section: 'media_categories' },
+      update: { data: { categories } },
+      create: { section: 'media_categories', data: { categories } },
+    })
+
+    await logActivity('UPDATE', 'SiteSettings', `Updated media categories: ${categories.join(', ')}`, settings.id)
+
+    res.json({ success: true, data: categories })
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message })
+  }
+}
+
 export async function remove(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params

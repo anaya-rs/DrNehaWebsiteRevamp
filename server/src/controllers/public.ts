@@ -163,6 +163,55 @@ export async function getEmergency(req: Request, res: Response): Promise<void> {
   return getSettingsSection('emergency', req, res)
 }
 
+export async function getSpecialities(req: Request, res: Response): Promise<void> {
+  try {
+    // Return default specialities or fetch from settings if available
+    const defaultSpecialities = [
+      'General Dermatology',
+      'Cosmetic Dermatology', 
+      'Medical Dermatology',
+      'Surgical Dermatology',
+      'Pediatric Dermatology',
+      'Dermatopathology'
+    ]
+
+    // Try to get custom specialities from settings
+    const settings = await prisma.siteSettings.findUnique({ where: { section: 'specialities' } })
+    
+    if (settings && settings.data && typeof settings.data === 'object' && 'specialities' in settings.data) {
+      const data = settings.data as any
+      if (Array.isArray(data.specialities)) {
+        res.json({ success: true, data: data.specialities })
+        return
+      }
+    }
+    
+    res.json({ success: true, data: defaultSpecialities })
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message })
+  }
+}
+
+export async function getFaqs(req: Request, res: Response): Promise<void> {
+  try {
+    // Try to get FAQs from settings
+    const settings = await prisma.siteSettings.findUnique({ where: { section: 'faqs' } })
+    
+    if (settings && settings.data && typeof settings.data === 'object' && 'faqs' in settings.data) {
+      const data = settings.data as any
+      if (Array.isArray(data.faqs)) {
+        res.json({ success: true, data: data.faqs })
+        return
+      }
+    }
+    
+    // Return empty array if no FAQs are configured
+    res.json({ success: true, data: [] })
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message })
+  }
+}
+
 export async function getAvailability(_req: Request, res: Response): Promise<void> {
   try {
     const blocks = await prisma.availabilityBlock.findMany({
