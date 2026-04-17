@@ -56,6 +56,8 @@ export const mediaApi = {
   patch: (id: string, data: Record<string, unknown>) =>
     api.patch(`/media/${id}`, data),
   delete: (id: string) => api.delete(`/media/${id}`),
+  getCategories: () => api.get('/media/categories'),
+  saveCategories: (categories: string[]) => api.put('/media/categories', { categories }),
   getGallerySettings: () => api.get('/gallery/settings'),
   putGallerySettings: (data: unknown) => api.put('/gallery/settings', data),
 }
@@ -68,6 +70,10 @@ export const postsApi = {
   get: (id: string) => api.get(`/posts/${id}`),
   update: (id: string, data: unknown) => api.put(`/posts/${id}`, data),
   delete: (id: string) => api.delete(`/posts/${id}`),
+  uploadDocx: (form: FormData) =>
+    api.post('/posts/upload-docx', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
 }
 
 // ─── Pages ───────────────────────────────────────────────────────────────────
@@ -100,5 +106,9 @@ export const publicApi = {
   getSocial: () => api.get('/public/settings/social'),
   getEmergency: () => api.get('/public/settings/emergency'),
   getAvailability: () => api.get('/public/availability'),
+  getArticles: () => api.get('/public/articles'),
+  getArticle: (slug: string) => api.get(`/public/articles/${slug}`),
+  getSpecialities: () => api.get('/public/settings/specialities'),
+  getFaqs: () => api.get('/public/settings/faqs'),
   submitAppointment: (data: unknown) => api.post('/appointments', data),
 }

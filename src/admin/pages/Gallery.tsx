@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { Copy, Trash2, X, Plus, Settings } from 'lucide-react'
@@ -32,6 +32,19 @@ export default function Gallery() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<MediaItem | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+  const { data: catsData } = useQuery({
+    queryKey: ['media', 'categories'],
+    queryFn: () => mediaApi.getCategories().then(r => r.data.data as string[]),
+  })
+  useEffect(() => {
+    if (catsData && catsData.length > 0) setCategories(['All', ...catsData.filter(c => c !== 'All')])
+  }, [catsData])
+
+  const saveCatsMut = useMutation({
+    mutationFn: (cats: string[]) => mediaApi.saveCategories(cats.filter(c => c !== 'All')),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['media', 'categories'] }),
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: ['media', activeCategory],
@@ -142,7 +155,7 @@ export default function Gallery() {
               onChange={(e) => setNewCat(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && newCat.trim()) {
-                  setCategories((c) => [...c, newCat.trim()])
+                  const next = [...categories, newCat.trim()]; setCategories(next); saveCatsMut.mutate(next)
                   setNewCat('')
                   setAddingCat(false)
                 } else if (e.key === 'Escape') {

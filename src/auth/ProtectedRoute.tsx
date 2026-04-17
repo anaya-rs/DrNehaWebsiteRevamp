@@ -14,6 +14,8 @@ const Blog = React.lazy(() => import('../admin/pages/Blog'))
 const BlogEditor = React.lazy(() => import('../admin/pages/BlogEditor'))
 const Pages = React.lazy(() => import('../admin/pages/Pages'))
 const Settings = React.lazy(() => import('../admin/pages/Settings'))
+const Specialities = React.lazy(() => import('../admin/pages/Specialities'))
+const FAQs = React.lazy(() => import('../admin/pages/FAQs'))
 
 function PageSkeleton() {
   return (
@@ -72,6 +74,8 @@ export default function ProtectedRoute() {
           <Route path="blog" element={<Blog />} />
           <Route path="blog/new" element={<BlogEditor />} />
           <Route path="blog/edit/:id" element={<BlogEditor />} />
+          <Route path="specialities" element={<Specialities />} />
+          <Route path="faqs" element={<FAQs />} />
           <Route path="pages" element={<Pages />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<Navigate to="dashboard" replace />} />

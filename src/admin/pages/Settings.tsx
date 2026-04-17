@@ -29,7 +29,7 @@ function ContactTab() {
   useEffect(() => { if (data) setForm(data) }, [data])
 
   const mut = useMutation({
-    mutationFn: () => settingsApi.update('contact', form),
+    mutationFn: () => settingsApi.update('contact', { data: form }),
     onSuccess: () => toast.success('Contact info saved'),
     onError: () => toast.error('Failed to save'),
   })
@@ -62,7 +62,7 @@ function ClinicsTab() {
   useEffect(() => { if (data) setClinics(data.items || []) }, [data])
 
   const mut = useMutation({
-    mutationFn: () => settingsApi.update('clinics', { items: clinics }),
+    mutationFn: () => settingsApi.update('clinics', { data: { items: clinics } }),
     onSuccess: () => toast.success('Clinics saved'),
     onError: () => toast.error('Failed to save'),
   })
@@ -97,7 +97,7 @@ function SocialTab() {
   useEffect(() => { if (data) setSocial(data) }, [data])
 
   const mut = useMutation({
-    mutationFn: () => settingsApi.update('social', social),
+    mutationFn: () => settingsApi.update('social', { data: social }),
     onSuccess: () => toast.success('Social media saved'),
     onError: () => toast.error('Failed to save'),
   })
@@ -135,7 +135,7 @@ function EmergencyTab() {
   useEffect(() => { if (data) setForm(data) }, [data])
 
   const mut = useMutation({
-    mutationFn: () => settingsApi.update('emergency', form),
+    mutationFn: () => settingsApi.update('emergency', { data: form }),
     onSuccess: () => toast.success('Emergency settings saved'),
     onError: () => toast.error('Failed to save'),
   })
@@ -167,7 +167,7 @@ function EmailSmsTab() {
   const [email, setEmail] = useState<any>({})
   useEffect(() => { if (emailData) setEmail(emailData) }, [emailData])
 
-  const emailMut = useMutation({ mutationFn: () => settingsApi.update('email', email), onSuccess: () => toast.success('SMTP settings saved'), onError: () => toast.error('Failed') })
+  const emailMut = useMutation({ mutationFn: () => settingsApi.update('email', { data: email }), onSuccess: () => toast.success('SMTP settings saved'), onError: () => toast.error('Failed') })
   const testEmailMut = useMutation({ mutationFn: () => settingsApi.testEmail(), onSuccess: () => toast.success('Test email sent!'), onError: () => toast.error('Test email failed') })
   const testSmsMut = useMutation({ mutationFn: () => settingsApi.testSms(), onSuccess: () => toast.success('Test SMS sent!'), onError: () => toast.error('Test SMS failed') })
 

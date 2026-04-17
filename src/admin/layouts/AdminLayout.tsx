@@ -9,6 +9,8 @@ import {
   LogOut,
   Menu,
   X,
+  Stethoscope,
+  HelpCircle,
 } from 'lucide-react'
 import { authApi } from '../../lib/api'
 import { useAuthStore } from '../../store/authStore'
@@ -19,7 +21,9 @@ const NAV_ITEMS = [
   { label: 'Dashboard',    icon: LayoutDashboard, to: '/admin/dashboard' },
   { label: 'Appointments', icon: Calendar,         to: '/admin/appointments' },
   { label: 'Gallery',      icon: Image,            to: '/admin/gallery' },
-  { label: 'Blog',         icon: FileText,         to: '/admin/blog' },
+  { label: 'Articles',     icon: FileText,         to: '/admin/blog' },
+  { label: 'Specialities', icon: Stethoscope,      to: '/admin/specialities' },
+  { label: 'FAQs',         icon: HelpCircle,       to: '/admin/faqs' },
   { label: 'Pages',        icon: Layout,           to: '/admin/pages' },
   { label: 'Settings',     icon: Settings,         to: '/admin/settings' },
 ]

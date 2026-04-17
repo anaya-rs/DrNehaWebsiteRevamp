@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Edit2, Trash2, Search } from 'lucide-react'
+import { Plus, Edit2, Trash2, Search, Upload } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { postsApi } from '../../lib/api'
 import Badge from '../components/Badge'
@@ -27,6 +27,19 @@ export default function Blog() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [deleteTarget, setDeleteTarget] = useState<Post | null>(null)
+  const docxRef = useRef<HTMLInputElement>(null)
+
+  const uploadDocxMut = useMutation({
+    mutationFn: async (files: FileList) => {
+      for (const file of Array.from(files)) {
+        const fd = new FormData()
+        fd.append('file', file)
+        await postsApi.uploadDocx(fd)
+      }
+    },
+    onSuccess: () => { toast.success('Article(s) uploaded'); qc.invalidateQueries({ queryKey: ['posts'] }) },
+    onError: () => toast.error('Upload failed'),
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: ['posts', activeTab, search, page],
@@ -57,15 +70,21 @@ export default function Blog() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Blog</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{meta.total} posts</p>
+          <h1 className="text-2xl font-bold text-gray-900">Articles</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{meta.total} articles</p>
         </div>
-        <button
-          onClick={() => navigate('/admin/blog/new')}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#0b6b4e] text-white text-sm font-semibold rounded-lg hover:bg-[#09573f] transition"
-        >
-          <Plus size={16} /> New Post
-        </button>
+        <div className="flex items-center gap-2">
+          <input ref={docxRef} type="file" accept=".docx,.doc" multiple className="hidden"
+            onChange={e => { if (e.target.files?.length) { uploadDocxMut.mutate(e.target.files); e.target.value = '' } }} />
+          <button onClick={() => docxRef.current?.click()} disabled={uploadDocxMut.isPending}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition disabled:opacity-60">
+            <Upload size={15} /> {uploadDocxMut.isPending ? 'Uploading…' : 'Upload .docx'}
+          </button>
+          <button onClick={() => navigate('/admin/blog/new')}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#0b6b4e] text-white text-sm font-semibold rounded-lg hover:bg-[#09573f] transition">
+            <Plus size={16} /> New Article
+          </button>
+        </div>
       </div>
 
       {/* Tabs + Search */}
