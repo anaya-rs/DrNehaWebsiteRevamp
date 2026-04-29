@@ -5,15 +5,22 @@ yarn-debug.log*
 yarn-error.log*
 
 # Production builds
-dist/
+**/dist/
 build/
 
-# Environment variables
+# Environment variables — never commit real credentials
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+server/.env
+
+# User-uploaded media — served from local disk in dev, S3 in production.
+# Run `git rm -r --cached server/uploads/` if these were previously committed.
+server/uploads/
+
+# Claude Code internal directory
 .claude
 
 # IDE and editor files
@@ -33,7 +40,7 @@ ehthumbs.db
 Thumbs.db
 
 # Logs
-logs
+logs/
 *.log
 
 # Runtime data
@@ -42,7 +49,7 @@ pids
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
+# Coverage
 coverage/
 
 # Temporary folders
