@@ -42,8 +42,16 @@ model AvailabilityBlock {
 model Media {
   id           String   @id @default(cuid())
   filename     String
+  // For S3-backed items these hold the *last signed URL we generated* (or can
+  // be left blank — the read path signs fresh URLs from the storage keys).
+  // For local-backed items they hold the usual /uploads/... paths.
   originalUrl  String
   thumbnailUrl String
+  // S3 object keys. Null for legacy / local-backed items.
+  originalKey   String?
+  thumbnailKey  String?
+  // 'local' or 's3'. Controls how URLs are resolved on read.
+  storage      String   @default("local")
   altText      String   @default("")
   category     String   @default("Uncategorized")
   type         String
@@ -113,4 +121,15 @@ model ActivityLog {
   entityId    String?
   description String
   createdAt   DateTime @default(now())
+}
+
+model Speciality {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  content     Json
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

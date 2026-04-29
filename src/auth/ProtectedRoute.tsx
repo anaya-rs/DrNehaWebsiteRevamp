@@ -12,9 +12,11 @@ const Gallery = React.lazy(() => import('../admin/pages/Gallery'))
 const GallerySettings = React.lazy(() => import('../admin/pages/GallerySettings'))
 const Blog = React.lazy(() => import('../admin/pages/Blog'))
 const BlogEditor = React.lazy(() => import('../admin/pages/BlogEditor'))
+const ArticleEditor = React.lazy(() => import('../admin/pages/ArticleEditor'))
 const Pages = React.lazy(() => import('../admin/pages/Pages'))
 const Settings = React.lazy(() => import('../admin/pages/Settings'))
-const Specialities = React.lazy(() => import('../admin/pages/Specialities'))
+const SpecialitiesList = React.lazy(() => import('../admin/pages/SpecialitiesList'))
+const SpecialityEditor = React.lazy(() => import('../admin/pages/SpecialityEditor'))
 const FAQs = React.lazy(() => import('../admin/pages/FAQs'))
 
 function PageSkeleton() {
@@ -72,9 +74,13 @@ export default function ProtectedRoute() {
           <Route path="gallery" element={<Gallery />} />
           <Route path="gallery/settings" element={<GallerySettings />} />
           <Route path="blog" element={<Blog />} />
+          <Route path="article/new" element={<ArticleEditor />} />
+          <Route path="article/edit/:id" element={<ArticleEditor />} />
           <Route path="blog/new" element={<BlogEditor />} />
           <Route path="blog/edit/:id" element={<BlogEditor />} />
-          <Route path="specialities" element={<Specialities />} />
+          <Route path="specialities" element={<SpecialitiesList />} />
+          <Route path="speciality/new" element={<SpecialityEditor />} />
+          <Route path="speciality/edit/:id" element={<SpecialityEditor />} />
           <Route path="faqs" element={<FAQs />} />
           <Route path="pages" element={<Pages />} />
           <Route path="settings" element={<Settings />} />

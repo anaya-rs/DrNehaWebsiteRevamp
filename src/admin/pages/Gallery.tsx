@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { Copy, Trash2, X, Plus, Settings } from 'lucide-react'
@@ -20,30 +20,39 @@ interface MediaItem {
   height?: number
 }
 
-const DEFAULT_CATEGORIES = ['All', 'Clinic Photos', 'Patient Testimonials', 'Procedure Results', 'News Clippings', 'Videos']
+const INITIAL_CATEGORIES = ['All']
 
 export default function Gallery() {
   const qc = useQueryClient()
   const navigate = useNavigate()
   const [activeCategory, setActiveCategory] = useState('All')
-  const [categories, setCategories] = useState(DEFAULT_CATEGORIES)
+  const [categories, setCategories] = useState<string[]>(INITIAL_CATEGORIES)
   const [newCat, setNewCat] = useState('')
   const [addingCat, setAddingCat] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<MediaItem | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null)
 
   const { data: catsData } = useQuery({
     queryKey: ['media', 'categories'],
     queryFn: () => mediaApi.getCategories().then(r => r.data.data as string[]),
   })
   useEffect(() => {
-    if (catsData && catsData.length > 0) setCategories(['All', ...catsData.filter(c => c !== 'All')])
+    if (catsData) {
+      setCategories(['All', ...catsData.filter((c) => c && c !== 'All')])
+    }
   }, [catsData])
 
   const saveCatsMut = useMutation({
     mutationFn: (cats: string[]) => mediaApi.saveCategories(cats.filter(c => c !== 'All')),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['media', 'categories'] }),
+    onError: (err: any) => {
+      const msg = err?.response?.data?.error || 'Could not save categories'
+      toast.error(msg)
+      // Roll back local state to the server copy
+      qc.invalidateQueries({ queryKey: ['media', 'categories'] })
+    },
   })
 
   const { data, isLoading } = useQuery({
@@ -133,49 +142,88 @@ export default function Gallery() {
       </div>
 
       {/* Category Tabs */}
-      <div className="flex flex-wrap gap-2 items-center">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition ${
-              activeCategory === cat
-                ? 'bg-[#0b6b4e] text-white'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-[#0b6b4e] hover:text-[#0b6b4e]'
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-        {addingCat ? (
-          <div className="flex items-center gap-1">
-            <input
-              autoFocus
-              value={newCat}
-              onChange={(e) => setNewCat(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && newCat.trim()) {
-                  const next = [...categories, newCat.trim()]; setCategories(next); saveCatsMut.mutate(next)
-                  setNewCat('')
-                  setAddingCat(false)
-                } else if (e.key === 'Escape') {
-                  setAddingCat(false)
-                  setNewCat('')
-                }
-              }}
-              placeholder="Category name"
-              className="px-2 py-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0b6b4e] w-36"
-            />
-            <button onClick={() => setAddingCat(false)} className="text-gray-400 hover:text-gray-600"><X size={14} /></button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setAddingCat(true)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm text-gray-500 border border-dashed border-gray-300 hover:border-[#0b6b4e] hover:text-[#0b6b4e] transition"
-          >
-            <Plus size={13} /> Add Category
-          </button>
-        )}
+      <div>
+        <div className="flex items-baseline justify-between mb-2">
+          <h2 className="text-sm font-semibold text-gray-700">Categories</h2>
+          <span className="text-xs text-gray-400">
+            Tap a category to filter. Click × on a category to remove it (only works if no media is using it).
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-2 items-center">
+          {categories.map((cat) => {
+            const isAll = cat === 'All'
+            const active = activeCategory === cat
+            return (
+              <div
+                key={cat}
+                className={`flex items-center rounded-full text-sm font-medium transition border ${
+                  active
+                    ? 'bg-[#0b6b4e] text-white border-[#0b6b4e]'
+                    : 'bg-white border-gray-200 text-gray-600'
+                }`}
+              >
+                <button
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-3.5 py-1.5 rounded-full ${
+                    !active ? 'hover:text-[#0b6b4e]' : ''
+                  }`}
+                >
+                  {cat}
+                </button>
+                {!isAll && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setCategoryToDelete(cat)
+                    }}
+                    title={`Remove "${cat}"`}
+                    className={`pr-2 pl-0.5 ${
+                      active ? 'text-white/70 hover:text-white' : 'text-gray-400 hover:text-red-500'
+                    }`}
+                  >
+                    <X size={13} />
+                  </button>
+                )}
+              </div>
+            )
+          })}
+          {addingCat ? (
+            <div className="flex items-center gap-1">
+              <input
+                autoFocus
+                value={newCat}
+                onChange={(e) => setNewCat(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newCat.trim()) {
+                    const trimmed = newCat.trim()
+                    if (categories.includes(trimmed)) {
+                      toast.error('That category already exists')
+                      return
+                    }
+                    const next = [...categories, trimmed]
+                    setCategories(next)
+                    saveCatsMut.mutate(next)
+                    setNewCat('')
+                    setAddingCat(false)
+                  } else if (e.key === 'Escape') {
+                    setAddingCat(false)
+                    setNewCat('')
+                  }
+                }}
+                placeholder="Category name"
+                className="px-2 py-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0b6b4e] w-36"
+              />
+              <button onClick={() => setAddingCat(false)} className="text-gray-400 hover:text-gray-600"><X size={14} /></button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setAddingCat(true)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm text-gray-500 border border-dashed border-gray-300 hover:border-[#0b6b4e] hover:text-[#0b6b4e] transition"
+            >
+              <Plus size={13} /> Add Category
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Bulk actions bar */}
@@ -333,6 +381,44 @@ export default function Gallery() {
       >
         <p className="text-sm text-gray-600">
           Delete <strong>{deleteTarget?.filename}</strong>? This will remove the file from disk and cannot be undone.
+        </p>
+      </Modal>
+
+      {/* Delete Category Confirm */}
+      <Modal
+        open={!!categoryToDelete}
+        onClose={() => setCategoryToDelete(null)}
+        title="Remove Category"
+        footer={
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setCategoryToDelete(null)}
+              className="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                if (!categoryToDelete) return
+                const next = categories.filter((c) => c !== categoryToDelete)
+                // Don't let the user get stranded on a category that no longer exists
+                if (activeCategory === categoryToDelete) setActiveCategory('All')
+                setCategories(next)
+                saveCatsMut.mutate(next)
+                setCategoryToDelete(null)
+              }}
+              disabled={saveCatsMut.isPending}
+              className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-60"
+            >
+              Remove
+            </button>
+          </div>
+        }
+      >
+        <p className="text-sm text-gray-600">
+          Remove the category <strong>{categoryToDelete}</strong>? This only deletes the label —
+          no media files will be deleted. If any media is still assigned to this category the
+          server will reject the change and tell you which items need to be moved first.
         </p>
       </Modal>
     </div>

@@ -4,13 +4,13 @@ import {
   getPosts,
   getPost,
   getMedia,
+  getMediaCategories,
   getGallerySettings,
   getContact,
   getClinics,
   getSocial,
   getEmergency,
   getAvailability,
-  getSpecialities,
   getFaqs,
 } from '../controllers/public'
 
@@ -25,6 +25,7 @@ router.get('/posts/:slug', getPost)
 
 // Media / gallery
 router.get('/media', getMedia)
+router.get('/media/categories', getMediaCategories)
 router.get('/gallery/settings', getGallerySettings)
 
 // Site settings
@@ -32,7 +33,6 @@ router.get('/settings/contact', getContact)
 router.get('/settings/clinics', getClinics)
 router.get('/settings/social', getSocial)
 router.get('/settings/emergency', getEmergency)
-router.get('/settings/specialities', getSpecialities)
 router.get('/settings/faqs', getFaqs)
 
 // Availability

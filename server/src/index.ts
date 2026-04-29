@@ -13,7 +13,9 @@ import pageRoutes from './routes/pages'
 import settingsRoutes from './routes/settings'
 import galleryRoutes from './routes/gallery'
 import availabilityRoutes from './routes/availability'
+import specialitiesRoutes from './routes/specialities'
 import publicRoutes from './routes/public'
+import publicSpecialitiesRoutes from './routes/publicSpecialities'
 
 const app = express()
 const PORT = process.env.PORT || 4000
@@ -62,7 +64,9 @@ app.use('/api/pages', pageRoutes)
 app.use('/api/settings', settingsRoutes)
 app.use('/api/gallery', galleryRoutes)
 app.use('/api/availability', availabilityRoutes)
+app.use('/api/specialities', specialitiesRoutes)
 app.use('/api/public', publicRoutes)
+app.use('/api/public/specialities', publicSpecialitiesRoutes)
 
 // Health check
 app.get('/api/health', (_req: Request, res: Response) => {

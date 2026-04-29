@@ -76,6 +76,16 @@ export const postsApi = {
     }),
 }
 
+// ─── Specialities ─────────────────────────────────────────────────────────────
+export const specialitiesApi = {
+  list: (params?: Record<string, string | number>) =>
+    api.get('/specialities', { params }),
+  create: (data: unknown) => api.post('/specialities', data),
+  get: (id: string) => api.get(`/specialities/${id}`),
+  update: (id: string, data: unknown) => api.put(`/specialities/${id}`, data),
+  delete: (id: string) => api.delete(`/specialities/${id}`),
+}
+
 // ─── Pages ───────────────────────────────────────────────────────────────────
 export const pagesApi = {
   get: (section: string) => api.get(`/pages/${section}`),
@@ -100,6 +110,7 @@ export const publicApi = {
   getPost: (slug: string) => api.get(`/public/posts/${slug}`),
   getMedia: (params?: Record<string, string | number>) =>
     api.get('/public/media', { params }),
+  getMediaCategories: () => api.get('/public/media/categories'),
   getGallerySettings: () => api.get('/public/gallery/settings'),
   getContact: () => api.get('/public/settings/contact'),
   getClinics: () => api.get('/public/settings/clinics'),
@@ -108,7 +119,8 @@ export const publicApi = {
   getAvailability: () => api.get('/public/availability'),
   getArticles: () => api.get('/public/articles'),
   getArticle: (slug: string) => api.get(`/public/articles/${slug}`),
-  getSpecialities: () => api.get('/public/settings/specialities'),
+  getSpecialitiesList: () => api.get('/public/specialities'),
+  getSpeciality: (slug: string) => api.get(`/public/specialities/${slug}`),
   getFaqs: () => api.get('/public/settings/faqs'),
   submitAppointment: (data: unknown) => api.post('/appointments', data),
 }

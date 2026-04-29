@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
@@ -88,6 +88,18 @@ export default function TipTapEditor({ content, onChange, placeholder }: TipTapE
       },
     },
   })
+
+  // Sync external content into the editor when it changes after initial mount
+  // (e.g. async data load populates contentJson after the editor is already mounted).
+  // JSON comparison avoids resetting cursor position on every keystroke.
+  useEffect(() => {
+    if (!editor) return
+    const incoming = JSON.stringify(content)
+    const current = JSON.stringify(editor.getJSON())
+    if (incoming !== current) {
+      editor.commands.setContent(content, false)
+    }
+  }, [editor, content])
 
   const setLink = useCallback(() => {
     if (!editor) return

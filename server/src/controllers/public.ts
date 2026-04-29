@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
+import { hydrateMediaItems } from '../utils/mediaHydrate'
 
 const prisma = new PrismaClient()
 
@@ -102,11 +103,50 @@ export async function getMedia(req: Request, res: Response): Promise<void> {
       }),
     ])
 
+    const hydrated = await hydrateMediaItems(media)
+
     res.json({
       success: true,
-      data: media,
+      data: hydrated,
       meta: { total, page: pageNum, limit: limitNum },
     })
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message })
+  }
+}
+
+export async function getMediaCategories(_req: Request, res: Response): Promise<void> {
+  try {
+    // Try the admin-managed list first
+    const settings = await prisma.siteSettings.findUnique({
+      where: { section: 'media_categories' },
+    })
+
+    let categories: string[] = []
+    if (
+      settings?.data &&
+      typeof settings.data === 'object' &&
+      'categories' in settings.data
+    ) {
+      const cats = (settings.data as any).categories
+      if (Array.isArray(cats)) {
+        categories = cats.filter((c): c is string => typeof c === 'string')
+      }
+    }
+
+    // Fall back to distinct categories used on actual media rows
+    if (categories.length === 0) {
+      const used = await prisma.media.findMany({
+        select: { category: true },
+        distinct: ['category'],
+        orderBy: { category: 'asc' },
+      })
+      categories = used
+        .map((m) => m.category)
+        .filter((c): c is string => !!c && c !== 'Uncategorized')
+    }
+
+    res.json({ success: true, data: categories })
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message })
   }
@@ -161,35 +201,6 @@ export async function getSocial(req: Request, res: Response): Promise<void> {
 
 export async function getEmergency(req: Request, res: Response): Promise<void> {
   return getSettingsSection('emergency', req, res)
-}
-
-export async function getSpecialities(req: Request, res: Response): Promise<void> {
-  try {
-    // Return default specialities or fetch from settings if available
-    const defaultSpecialities = [
-      'General Dermatology',
-      'Cosmetic Dermatology', 
-      'Medical Dermatology',
-      'Surgical Dermatology',
-      'Pediatric Dermatology',
-      'Dermatopathology'
-    ]
-
-    // Try to get custom specialities from settings
-    const settings = await prisma.siteSettings.findUnique({ where: { section: 'specialities' } })
-    
-    if (settings && settings.data && typeof settings.data === 'object' && 'specialities' in settings.data) {
-      const data = settings.data as any
-      if (Array.isArray(data.specialities)) {
-        res.json({ success: true, data: data.specialities })
-        return
-      }
-    }
-    
-    res.json({ success: true, data: defaultSpecialities })
-  } catch (err: any) {
-    res.status(500).json({ success: false, error: err.message })
-  }
 }
 
 export async function getFaqs(req: Request, res: Response): Promise<void> {

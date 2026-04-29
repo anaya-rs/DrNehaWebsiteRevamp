@@ -4,6 +4,7 @@ import {
   Calendar,
   Image,
   FileText,
+  Stethoscope,
   Settings,
   LogOut,
   Menu,
@@ -16,10 +17,11 @@ import { useState, useEffect, useCallback } from 'react'
 
 const NAV_ITEMS = [
   { label: 'Dashboard',    icon: LayoutDashboard, to: '/admin/dashboard' },
-  { label: 'Appointments', icon: Calendar,         to: '/admin/appointments' },
-  { label: 'Gallery',      icon: Image,            to: '/admin/gallery' },
-  { label: 'Articles',     icon: FileText,         to: '/admin/blog' },
-  { label: 'Settings',     icon: Settings,         to: '/admin/settings' },
+  { label: 'Appointments', icon: Calendar,        to: '/admin/appointments' },
+  { label: 'Gallery',      icon: Image,           to: '/admin/gallery' },
+  { label: 'Articles',     icon: FileText,        to: '/admin/blog' },
+  { label: 'Specialities', icon: Stethoscope,     to: '/admin/specialities' },
+  { label: 'Settings',     icon: Settings,        to: '/admin/settings' },
 ]
 
 const HEADER_H = 56   // px

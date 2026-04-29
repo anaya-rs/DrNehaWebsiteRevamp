@@ -8,48 +8,9 @@ const LoginPage = lazy(() => import('./auth/LoginPage'));
 const ProtectedRoute = lazy(() => import('./auth/ProtectedRoute'));
 
 /* ═══════════════════════════════════════════════════════════
-   STATIC DATA
+   STATIC DATA — fallbacks for when the CMS has no content yet.
+   Speciality / service content is otherwise loaded from the DB.
 ═══════════════════════════════════════════════════════════ */
-const SERVICES = [
-  { name: "Voice Treatment", slug: "voice", icon: "🎙️", img: "/voicedisorder.png",
-    desc: "Advanced care for vocal cord disorders and voice rehabilitation.",
-    detail: "Dr. Sood specialises in diagnosing and treating conditions affecting the larynx and voice box — including vocal cord paralysis, nodules, polyps and spasmodic dysphonia — using microscopic and laser-assisted techniques." },
-  { name: "Endoscopy Sinus & Skull Base", slug: "sinus", icon: "🔬", img: "/sinusitis.png",
-    desc: "Minimally invasive procedures for chronic sinusitis and skull base conditions.",
-    detail: "Functional endoscopic sinus surgery (FESS) and extended endoscopic approaches allow treatment of complex sinus disease, tumors, CSF leaks and pituitary lesions through the nose — no external incisions." },
-  { name: "Snoring & Sleep Apnea", slug: "sleep-apnea", icon: "😴", img: "/Sleep-Apnea-and-Snoring.png",
-    desc: "Effective treatments to improve breathing and sleep quality.",
-    detail: "Comprehensive evaluation including polysomnography, followed by tailored treatment: lifestyle modification, CPAP, oral devices, or surgical correction of anatomical obstruction in the palate, tonsils or nasal passages." },
-  { name: "Cochlear Implants", slug: "cochlear", icon: "👂", img: "/Cochlear.png",
-    desc: "Restoring hearing for severe to profound hearing loss with advanced implant technology.",
-    detail: "With 5,000+ cochlear implant surgeries performed, Dr. Sood is one of India's most experienced implant surgeons. The program covers candidacy evaluation, surgery, device programming and lifelong auditory rehabilitation." },
-  { name: "Laser Surgery", slug: "laser", icon: "⚡", img: "/Co2.png",
-    desc: "Precision laser treatments for various ENT conditions with minimal discomfort.",
-    detail: "Laser-assisted procedures offer bloodless surgery with rapid healing — used for tonsillectomy, adenoidectomy, vocal cord lesions, nasal polyps and turbinate reduction, often as day-care procedures." },
-  { name: "CO₂ Laser Surgery", slug: "co2-laser", icon: "🔆", img: "",
-    desc: "Precise CO₂ laser for vocal cord, tonsil, and nasal conditions.",
-    detail: "CO₂ laser energy is selectively absorbed by soft tissue, enabling precise excision of lesions in the larynx, oral cavity and nasal airway with minimal thermal spread and faster healing." },
-  { name: "Septoplasty", slug: "septoplasty", icon: "👃", img: "",
-    desc: "Corrective surgery for deviated nasal septum to improve airflow.",
-    detail: "A deviated septum causes chronic nasal obstruction, recurrent sinusitis and sleep disturbance. Septoplasty straightens the cartilage and bone through the nostril with no external incisions. Recovery: 5–7 days." },
-  { name: "Tonsillectomy", slug: "tonsillectomy", icon: "🏥", img: "",
-    desc: "Safe removal of tonsils for chronic infections or obstruction.",
-    detail: "Indicated for recurrent tonsillitis (≥7 episodes/year), peritonsillar abscess, or obstructive sleep-disordered breathing. Performed with conventional dissection or coblation under general anaesthesia." },
-  { name: "Ear Microsurgery", slug: "ear-microsurgery", icon: "🔭", img: "",
-    desc: "Microscopic repair of the eardrum and middle ear structures.",
-    detail: "Myringoplasty, tympanoplasty and mastoidectomy treat chronic ear disease, cholesteatoma and conductive hearing loss, restoring both structure and hearing function under operative microscope guidance." },
-  { name: "Paediatric ENT", slug: "paediatric", icon: "👶", img: "",
-    desc: "Gentle, specialised ENT care for children of all ages.",
-    detail: "Children with recurrent ear infections, tonsillitis, adenoid hypertrophy, hearing loss and airway problems need age-specific expertise. Services include grommet insertion, adenotonsillectomy and paediatric cochlear implants." },
-];
-
-const CONDITIONS = [
-  "Voice Disorders", "Sinusitis", "Nasal Bleeding", "Deafness", "Ear Discharge",
-  "Nasal Polyposis", "Sleep Apnea & Snoring", "Tinnitus", "Tonsils", "Vertigo",
-  "Swollen Lymph Nodes", "Cochlear Implants", "Ear Infections", "Hoarseness",
-  "Nasal Obstruction", "Skull Base Tumors", "Thyroid Disorders", "Head & Neck Cancers",
-];
-
 const CLINIC_PHOTOS = [
   "https://www.drnehasood.in/images/doctor-image-3.jpeg",
   "https://www.drnehasood.in/images/doctor-image-4.jpeg",
@@ -61,10 +22,6 @@ const CLINIC_PHOTOS = [
 const VIDEO_GALLERY = [
   "https://www.drnehasood.in/video_gallery/video1.mp4",
   "https://www.drnehasood.in/video_gallery/video2.mp4",
-];
-const PRINT_MEDIA = [
-  "https://www.drnehasood.in/print_media/print1.jpg",
-  "https://www.drnehasood.in/print_media/print2.jpg",
 ];
 const STATIC_PDF_NEWS = [
   { name: "News Clipping 1", href: "/news-pdfs/news-clipping-01.pdf" },
@@ -92,229 +49,6 @@ const FAQS = [
   { q: "My snoring is keeping my partner awake. What can I do?", a: "Lifestyle changes like weight loss, sleeping on your side, and avoiding alcohol before bed often help. Snoring is frequently associated with obstructive sleep apnea, which warrants a proper evaluation." },
 ];
 
-/* ─── Speciality pages data ──────────────────────────────────────────────── */
-interface SpecSection {
-  title: string;
-  items?: string[];
-  cards?: { name: string; desc: string }[];
-}
-interface Speciality {
-  slug: string;
-  name: string;
-  tagline: string;
-  overview: string;
-  sections: SpecSection[];
-}
-
-const SPECIALITIES: Speciality[] = [
-  {
-    slug: "voice-disorder",
-    name: "Voice Disorders",
-    tagline: "Comprehensive diagnosis and treatment for voice disorders affecting speech, singing, and overall vocal health.",
-    overview: "People develop voice problems for many reasons. Doctors who specialise in ear, nose and throat disorders and speech pathology are involved in diagnosing and treating voice disorders. Treatment depends on what's causing your voice disorder, but may include voice therapy, medication, injections or surgery.",
-    sections: [
-      { title: "Common Voice Disorders", items: ["Vocal cord paralysis", "Spasmodic dysphonia", "Vocal cord nodules and polyps", "Vocal cord cysts", "Laryngitis (acute and chronic)", "Muscle tension dysphonia", "Reinke's edema", "Vocal cord scarring"] },
-      { title: "Causes & Risk Factors", items: ["Vocal strain and overuse", "Gastroesophageal reflux (GERD)", "Smoking and alcohol use", "Viral infections", "Neurological conditions", "Thyroid problems", "Professional voice users (singers, teachers, actors)", "Dehydration"] },
-      { title: "Symptoms", items: ["Hoarseness or rough voice quality", "Voice fatigue or loss of voice", "Throat pain or discomfort", "Difficulty speaking loudly", "Vocal breaks or cracking", "Reduced vocal range", "Neck or throat tension"] },
-      { title: "Treatment Options", cards: [
-        { name: "Voice Therapy", desc: "Exercises and techniques to improve voice production and reduce strain." },
-        { name: "Medication", desc: "Anti-reflux medications, steroids, and other pharmaceutical treatments." },
-        { name: "Injection Therapy", desc: "Vocal cord injections for medialization and voice enhancement." },
-        { name: "Phonosurgery", desc: "Microlaryngoscopy and laser surgery for structural vocal cord conditions." },
-      ]},
-      { title: "When to Seek Medical Help", items: ["Voice changes lasting more than 2 weeks", "Difficulty swallowing or breathing", "Severe throat pain", "Voice problems after surgery or injury", "Voice issues affecting work or daily life"] },
-    ],
-  },
-  {
-    slug: "sinusitis",
-    name: "Sinusitis",
-    tagline: "Comprehensive diagnosis and treatment for acute and chronic sinusitis using advanced medical and surgical approaches.",
-    overview: "Sinusitis is an inflammation or swelling of the tissue lining the sinuses. Healthy sinuses are filled with air, but when they become blocked and filled with fluid, germs can grow and cause an infection. Chronic sinusitis lasts 12 weeks or longer despite treatment attempts and can significantly impact quality of life.",
-    sections: [
-      { title: "Common Symptoms", items: ["Nasal inflammation and congestion", "Thick, discoloured discharge from the nose", "Postnasal drainage down the back of the throat", "Pain and swelling around the eyes, cheeks, nose or forehead", "Reduced sense of smell and taste", "Ear pain, headache, fatigue", "Bad breath"] },
-      { title: "Causes", items: ["Nasal polyps blocking the nasal passages", "Deviated nasal septum restricting sinus passages", "Respiratory tract infections inflaming the sinus lining", "Allergies such as hay fever", "Other conditions including cystic fibrosis and immune disorders"] },
-      { title: "Risk Factors", items: ["Nasal polyps or asthma", "Aspirin sensitivity", "Immune system disorders", "Hay fever or other allergies", "Regular exposure to pollutants", "Dental infection"] },
-      { title: "Treatment Options", cards: [
-        { name: "Medications", desc: "Nasal corticosteroids, saline irrigation, oral or injected corticosteroids." },
-        { name: "Antibiotics", desc: "Targeted antibiotic therapy for confirmed bacterial sinus infections." },
-        { name: "Immunotherapy", desc: "Allergy management to reduce inflammation contributing to sinusitis." },
-        { name: "Endoscopic Sinus Surgery", desc: "Minimally invasive surgery to remove polyps or open blocked passages." },
-        { name: "Balloon Sinuplasty", desc: "Minimally invasive procedure to dilate and open sinus passages." },
-      ]},
-      { title: "When to See a Doctor Urgently", items: ["Fever with swelling or redness around the eyes", "Severe headache or forehead swelling", "Confusion or double vision", "Stiff neck", "Sinusitis that doesn't respond to treatment after 10 days"] },
-    ],
-  },
-  {
-    slug: "nasal-bleeding",
-    name: "Nasal Bleeding",
-    tagline: "Expert diagnosis and treatment for nasal bleeding (epistaxis) using advanced medical and surgical techniques.",
-    overview: "Nasal bleeding, also known as epistaxis, is a common condition that can range from a minor nuisance to a situation requiring medical attention. The nose contains many blood vessels close to the surface, making it vulnerable to bleeding. Understanding the causes and proper management is essential for effective treatment.",
-    sections: [
-      { title: "Common Causes", items: ["Dry air — irritates nasal membranes in winter or dry climates", "Nose picking — trauma to delicate blood vessels", "Allergies and sinus infections", "Medications — blood thinners, nasal sprays", "Trauma — injury to the nose or face", "Deviated septum — abnormal nasal structure", "Polyps or tumours in nasal passages"] },
-      { title: "First Aid: What to Do", items: ["Sit upright and lean forward to prevent blood going down the throat", "Pinch your nose just below the bridge (the soft part)", "Breathe through your mouth", "Apply a cold compress to the bridge of the nose", "Hold pressure continuously for 10–15 minutes"] },
-      { title: "First Aid: What Not to Do", items: ["Do not lie flat or tilt your head back", "Do not blow your nose or stuff tissue into the nostril", "Do not engage in strenuous activity", "Do not pick your nose after bleeding stops"] },
-      { title: "Treatment Options", cards: [
-        { name: "Cauterisation", desc: "Chemical or electrical sealing of blood vessels to stop recurrent bleeding." },
-        { name: "Nasal Packing", desc: "Gauze or balloon packing to apply sustained pressure on bleeding sites." },
-        { name: "Topical Medication", desc: "Medicated sprays and ointments to control and prevent bleeding." },
-        { name: "Surgical Correction", desc: "Fixing structural problems such as a deviated nasal septum." },
-      ]},
-      { title: "Seek Immediate Medical Attention If", items: ["Bleeding lasts longer than 20 minutes despite pressure", "Bleeding is very heavy or causes dizziness or weakness", "Bleeding followed a serious head injury", "You have difficulty breathing"] },
-    ],
-  },
-  {
-    slug: "deafness",
-    name: "Deafness & Hearing Loss",
-    tagline: "Comprehensive evaluation and treatment for hearing loss including medical management and surgical interventions.",
-    overview: "Deafness and hearing loss can significantly impact quality of life, affecting communication, social interactions and overall wellbeing. Modern advances in audiology and surgical techniques offer effective solutions for various types of hearing impairment. Early diagnosis is crucial for optimal outcomes, especially in children where hearing is critical for speech and language development.",
-    sections: [
-      { title: "Types of Hearing Loss", items: ["Conductive — problems with outer or middle ear transmission", "Sensorineural — damage to the inner ear or auditory nerve", "Mixed — combination of conductive and sensorineural", "Central — problems with auditory processing in the brain"] },
-      { title: "Common Causes", items: ["Aging (presbycusis) — natural age-related hearing decline", "Noise exposure — prolonged exposure to loud sounds", "Genetic factors and inherited conditions", "Infections — ear infections, meningitis, mumps", "Head or ear trauma", "Ototoxic medications", "Tumours such as acoustic neuroma"] },
-      { title: "Symptoms", items: ["Difficulty understanding speech, especially in noise", "Frequently asking others to repeat themselves", "Turning up the TV or radio volume", "Withdrawal from conversations", "Tinnitus (ringing in the ears)", "Balance problems"] },
-      { title: "Treatment Options", cards: [
-        { name: "Hearing Aids", desc: "Digital devices tailored for mild to moderate sensorineural hearing loss." },
-        { name: "Cochlear Implants", desc: "Surgical solution for severe to profound hearing loss — Dr. Sood has performed 5,000+ implants." },
-        { name: "Bone Anchored Hearing Aids", desc: "Effective for conductive hearing loss or single-sided deafness." },
-        { name: "Medical Management", desc: "Treating underlying infections or conditions causing hearing loss." },
-        { name: "Surgical Interventions", desc: "Stapedectomy, tympanoplasty and other corrective ear surgeries." },
-        { name: "Auditory Rehabilitation", desc: "Speech therapy and structured listening training post-implant or post-surgery." },
-      ]},
-    ],
-  },
-  {
-    slug: "ear-discharge",
-    name: "Ear Discharge",
-    tagline: "Expert diagnosis and treatment for ear discharge (otorrhea) including infections and chronic conditions.",
-    overview: "Ear discharge, also known as otorrhea, is any fluid that comes from the ear. While some discharge is normal, persistent or abnormal discharge may indicate an underlying condition requiring medical attention. The type, colour and consistency of discharge can help identify the cause and guide appropriate treatment.",
-    sections: [
-      { title: "Types of Ear Discharge", items: ["Clear or white — normal earwax or water after swimming", "Yellow or green — bacterial infection", "Bloody — trauma, infection or foreign object", "Brown or black — old blood or fungal infection", "Watery and clear — possible cerebrospinal fluid (CSF) leak"] },
-      { title: "Common Causes", items: ["Otitis Media — middle ear infection", "Otitis Externa — swimmer's ear (outer ear infection)", "Eardrum perforation — hole in the eardrum", "Foreign objects in the ear canal", "Cholesteatoma — skin growth in the middle ear", "Head or ear trauma", "Tumours (benign or malignant)"] },
-      { title: "Associated Symptoms", items: ["Ear pain or discomfort", "Hearing loss", "Fever", "Itching in the ear canal", "Feeling of fullness in the ear", "Dizziness or balance problems", "Foul odour from the ear", "Tinnitus (ringing in the ears)"] },
-      { title: "Treatment Options", cards: [
-        { name: "Antibiotics", desc: "Targeted antibiotic therapy for confirmed bacterial ear infections." },
-        { name: "Antifungal Medication", desc: "Specific treatment for fungal ear infections." },
-        { name: "Ear Drops", desc: "Topical drops to treat infection and reduce inflammation in the canal." },
-        { name: "Professional Ear Cleaning", desc: "Safe removal of debris, wax or foreign material under specialist care." },
-        { name: "Tympanoplasty", desc: "Surgical repair of a perforated eardrum." },
-        { name: "Mastoidectomy", desc: "Surgery for chronic ear disease, cholesteatoma or severe infection." },
-      ]},
-      { title: "Seek Immediate Care If", items: ["Discharge is bloody or clear and watery (possible CSF)", "Severe pain or high fever", "Head injury preceded the discharge", "Sudden hearing loss", "Facial weakness or paralysis"] },
-    ],
-  },
-  {
-    slug: "nasal-polyposis",
-    name: "Nasal Polyposis",
-    tagline: "Advanced treatment for nasal polyps including medical management and endoscopic surgical removal.",
-    overview: "Nasal polyps are soft, painless, noncancerous growths on the lining of the nasal passages or sinuses. They hang down like teardrops and can obstruct nasal passages, causing breathing difficulties and reduced sense of smell. Early diagnosis and appropriate management are essential for optimal outcomes.",
-    sections: [
-      { title: "Common Causes", items: ["Chronic sinusitis — long-term inflammation of the sinuses", "Allergies — hay fever and allergic rhinitis", "Asthma — frequently associated with nasal polyps", "Aspirin sensitivity (Samter's triad)", "Cystic fibrosis", "Churg-Strauss syndrome — rare autoimmune disorder", "Genetic predisposition"] },
-      { title: "Symptoms", items: ["Persistent stuffy nose (nasal congestion)", "Runny nose and postnasal drip", "Reduced or complete loss of sense of smell", "Loss of sense of taste", "Facial pain or pressure", "Headaches and snoring", "Itching around the eyes"] },
-      { title: "Diagnosis", items: ["Nasal endoscopy — direct visualisation of polyps", "CT scan — detailed imaging of the sinuses", "Allergy testing — identify allergic triggers", "Blood tests — check for underlying conditions", "Sweat test — for cystic fibrosis screening"] },
-      { title: "Treatment Options", cards: [
-        { name: "Nasal Corticosteroids", desc: "First-line spray treatment to reduce polyp size and inflammation." },
-        { name: "Oral or Systemic Steroids", desc: "Short courses to rapidly shrink larger polyps." },
-        { name: "Antihistamines", desc: "Managing the allergic component that drives polyp growth." },
-        { name: "Endoscopic Sinus Surgery", desc: "Minimally invasive removal of polyps with direct visualisation." },
-        { name: "Polypectomy", desc: "Surgical removal of individual polyps blocking the nasal airway." },
-      ]},
-    ],
-  },
-  {
-    slug: "sleep-apnea",
-    name: "Sleep Apnea & Snoring",
-    tagline: "Comprehensive diagnosis and treatment for sleep apnea and snoring including surgical and non-surgical options.",
-    overview: "Sleep apnea is a serious sleep disorder in which breathing repeatedly stops and starts during sleep. Left untreated it can lead to significant health complications including cardiovascular disease, diabetes and cognitive decline. Snoring can also be a sign of underlying sleep apnea — proper diagnosis is essential before treatment.",
-    sections: [
-      { title: "Types of Sleep Apnea", items: ["Obstructive Sleep Apnea — most common; throat muscles relax blocking the airway", "Central Sleep Apnea — the brain fails to send proper signals to the breathing muscles", "Complex Sleep Apnea — a combination of both obstructive and central types"] },
-      { title: "Common Symptoms", items: ["Loud snoring", "Witnessed episodes of stopped breathing during sleep", "Gasping for air during sleep", "Morning headaches", "Excessive daytime sleepiness", "Difficulty concentrating", "Irritability and mood changes", "Dry mouth upon awakening"] },
-      { title: "Risk Factors", items: ["Excess weight — obesity significantly increases risk", "Age — risk increases after 40", "Male gender — more common in men", "Family history", "Alcohol use and smoking", "Chronic nasal congestion"] },
-      { title: "Potential Complications", items: ["High blood pressure", "Heart disease and arrhythmias", "Type 2 diabetes", "Stroke", "Depression and cognitive impairment"] },
-      { title: "Treatment Options", cards: [
-        { name: "CPAP Therapy", desc: "Continuous positive airway pressure — gold standard non-surgical treatment." },
-        { name: "Oral Appliances", desc: "Custom mouthpieces that keep the airway open during sleep." },
-        { name: "Surgical Correction", desc: "UPPP (uvulopalatopharyngoplasty) and other palatal or nasal surgeries." },
-        { name: "Weight Loss", desc: "Significant weight reduction can substantially improve or resolve OSA." },
-        { name: "Positional Therapy", desc: "Sleep position adjustments to reduce airway collapse." },
-        { name: "Lifestyle Changes", desc: "Avoiding alcohol before sleep, quitting smoking, improving sleep hygiene." },
-      ]},
-    ],
-  },
-  {
-    slug: "tinnitus",
-    name: "Tinnitus",
-    tagline: "Comprehensive management of tinnitus (ringing in the ears) including sound therapy and medical treatments.",
-    overview: "Tinnitus is the perception of noise or ringing in the ears when no external sound is actually present. It affects approximately 15–20% of people and can significantly impact sleep, concentration and quality of life. Understanding the underlying cause is key to effective management.",
-    sections: [
-      { title: "Common Causes", items: ["Age-related hearing loss — the most common cause", "Noise-induced hearing loss — loud noise exposure", "Ear and sinus issues — infections, earwax blockage", "Head and neck injuries", "Medications — aspirin, certain antibiotics, diuretics", "Meniere's disease and TMJ disorders", "Blood vessel problems — high blood pressure, atherosclerosis"] },
-      { title: "Types of Tinnitus", items: ["Subjective — only the patient can hear the sound", "Objective — audible to the examining doctor too", "Pulsatile — rhythmic, often synchronised with the heartbeat", "Low-frequency — deep humming sounds"] },
-      { title: "Symptoms", items: ["Ringing, buzzing, humming, hissing or clicking sounds", "Sounds that vary in pitch and volume", "Worse in quiet environments", "Interferes with sleep and concentration", "Often associated with some degree of hearing loss"] },
-      { title: "Treatment Options", cards: [
-        { name: "Sound Therapy", desc: "Masking devices and white noise machines to reduce tinnitus perception." },
-        { name: "Hearing Aids", desc: "Amplification devices that also mask tinnitus for patients with hearing loss." },
-        { name: "Tinnitus Retraining Therapy", desc: "Systematic habituation to retrain the brain's response to tinnitus sounds." },
-        { name: "Cognitive Behavioural Therapy", desc: "Psychological techniques to reduce distress and improve quality of life." },
-        { name: "Medication", desc: "Antidepressants or anti-anxiety medications for severe distress." },
-        { name: "Treating Underlying Conditions", desc: "Addressing root causes such as ear wax, infections or vascular disease." },
-      ]},
-    ],
-  },
-  {
-    slug: "tonsils",
-    name: "Tonsil Disorders",
-    tagline: "Comprehensive treatment for tonsil infections, chronic tonsillitis and tonsillectomy procedures.",
-    overview: "The tonsils are two lymph nodes located on each side of the back of the throat, functioning as a first-line defence against infection. However, they can themselves become infected and cause significant health issues. Tonsil problems are particularly common in children but affect adults as well.",
-    sections: [
-      { title: "Common Tonsil Conditions", items: ["Tonsillitis — inflammation of the tonsils", "Strep throat — bacterial infection affecting the tonsils", "Tonsil stones — calcified deposits in tonsil crypts", "Enlarged tonsils — chronic swelling or hypertrophy", "Peritonsillar abscess — collection of pus behind a tonsil", "Chronic tonsillitis — recurrent or persistent infections"] },
-      { title: "Symptoms", items: ["Sore throat and difficulty swallowing", "Red, swollen tonsils with white or yellow patches", "Fever", "Bad breath", "Ear pain and swollen lymph nodes in the neck", "Hoarse voice", "Difficulty breathing in severe cases"] },
-      { title: "When to Consider Tonsillectomy", items: ["Seven or more tonsil infections in one year", "Five or more infections per year for two consecutive years", "Three or more infections per year for three years", "Obstructive sleep apnea due to enlarged tonsils", "Difficulty eating or breathing", "Peritonsillar abscess not responding to treatment", "Suspicion of tonsil cancer"] },
-      { title: "Treatment Options", cards: [
-        { name: "Antibiotics", desc: "For confirmed bacterial infections such as streptococcal tonsillitis." },
-        { name: "Pain Management", desc: "Over-the-counter or prescription pain relief and anti-inflammatories." },
-        { name: "Tonsillectomy", desc: "Surgical removal — performed by conventional dissection or coblation technique." },
-        { name: "Adenoidectomy", desc: "Often performed alongside tonsillectomy in children with obstructive symptoms." },
-        { name: "Tonsil Stone Removal", desc: "Manual removal or laser treatment for recurrent calcified deposits." },
-      ]},
-    ],
-  },
-  {
-    slug: "vertigo",
-    name: "Vertigo & Balance Disorders",
-    tagline: "Expert diagnosis and treatment for vertigo and balance disorders including vestibular rehabilitation.",
-    overview: "Vertigo is a sensation of feeling off balance or spinning, typically caused by problems in the inner ear or brain. It can be temporary or long-term and significantly impact daily activities. Proper diagnosis is essential as the underlying cause determines the appropriate treatment approach.",
-    sections: [
-      { title: "Common Causes", items: ["BPPV (Benign Paroxysmal Positional Vertigo) — most common cause", "Meniere's disease — inner ear disorder causing vertigo and hearing changes", "Vestibular neuritis — inflammation of the vestibular nerve", "Labyrinthitis — inner ear infection", "Head injury — trauma to the inner ear or brain", "Vestibular migraines", "Multiple sclerosis"] },
-      { title: "Symptoms", items: ["Spinning sensation (may be brief or prolonged)", "Loss of balance and unsteadiness", "Nausea and vomiting", "Abnormal eye movements (nystagmus)", "Headache or sweating", "Tinnitus and hearing changes", "Difficulty focusing the eyes"] },
-      { title: "Diagnostic Tests", items: ["Dix-Hallpike Maneuver — tests for BPPV", "Videonystagmography (VNG) — records eye movements", "Caloric testing — tests inner ear response to temperature", "Posturography — assesses balance control", "MRI or CT scan — rules out brain abnormalities", "Audiometry — hearing tests"] },
-      { title: "Treatment Options", cards: [
-        { name: "Canalith Repositioning (Epley Maneuver)", desc: "Highly effective office procedure for BPPV — repositions displaced inner ear crystals." },
-        { name: "Vestibular Rehabilitation", desc: "Structured exercise programme to retrain balance and gaze stabilisation." },
-        { name: "Medications", desc: "Anti-nausea and anti-vertigo drugs for acute episodes." },
-        { name: "Lifestyle Modifications", desc: "Dietary changes (low-salt diet for Meniere's), stress management." },
-        { name: "Physical Therapy", desc: "Balance and gaze stabilisation exercises under specialist supervision." },
-        { name: "Surgery", desc: "For severe or refractory cases not responding to conservative management." },
-      ]},
-    ],
-  },
-  {
-    slug: "swollen-lymph-nodes",
-    name: "Swollen Lymph Nodes",
-    tagline: "Comprehensive evaluation and treatment for swollen lymph nodes in the head and neck region.",
-    overview: "Swollen lymph nodes (swollen glands) are a sign that the body is fighting an infection or illness. While most cases resolve after the underlying infection clears, persistent or unusually enlarged nodes may indicate a more serious condition requiring thorough medical evaluation.",
-    sections: [
-      { title: "Common Locations in ENT Practice", items: ["Neck — the most common location evaluated by ENT specialists", "Behind the ears — often associated with ear infections", "Under the jaw — related to throat and dental issues", "Above the collarbone — may indicate serious conditions requiring urgent evaluation"] },
-      { title: "Common Causes", items: ["Viral infections — common cold, flu, glandular fever", "Bacterial infections — strep throat, ear infections", "Dental problems — tooth abscesses, gum disease", "Sinusitis and tonsillitis", "Skin infections in the head and neck region", "Immune disorders — lupus, rheumatoid arthritis", "Cancer — lymphoma, leukaemia, metastatic disease"] },
-      { title: "When to See a Doctor Urgently", items: ["Nodes are hard, fixed and do not move when pressed", "Nodes larger than 2 centimetres", "Accompanied by fever, night sweats or unexplained weight loss", "Nodes appear suddenly without obvious cause", "Nodes are above the collarbone", "Multiple nodes swollen across different body areas"] },
-      { title: "Treatment Approaches", cards: [
-        { name: "Treat the Underlying Infection", desc: "Antibiotics or antivirals for confirmed infectious causes." },
-        { name: "Supportive Care", desc: "Rest, hydration and warm compresses for mild cases." },
-        { name: "Anti-inflammatory Medications", desc: "To reduce swelling and pain during the acute phase." },
-        { name: "Imaging Studies", desc: "Ultrasound, CT or MRI for detailed evaluation of node characteristics." },
-        { name: "Biopsy", desc: "Tissue sampling when cancer or lymphoma is clinically suspected." },
-        { name: "Specialist Referral", desc: "Oncology referral if lymphoma or metastatic cancer is confirmed." },
-      ]},
-    ],
-  },
-];
 
 const STATIC_SOCIAL = [
   { label: "YouTube", abbr: "YT", url: "https://www.youtube.com/channel/UCAh6S5zjb6HRcltZJyAJGBg", color: "#ff0000", desc: "Surgical walkthroughs & patient education" },
@@ -836,7 +570,7 @@ function PublicNav() {
     <>
       <nav>
         <Link className="nav-brand" to="/" style={{ textDecoration: "none" }}>
-          <img src="/logo updated.png" alt="Dr. Neha Sood" className="nav-logo"
+          <img src="/logo.png" alt="Dr. Neha Sood" className="nav-logo"
             onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
           <div>
             <div className="nav-brand-main">Dr. Neha Sood</div>
@@ -896,6 +630,11 @@ function HomePage() {
   const { data: faqsData } = useQuery({
     queryKey: ['public', 'faqs'],
     queryFn: () => publicApi.getFaqs().then(r => r.data.data),
+    staleTime: 1000 * 60 * 5,
+  });
+  const { data: specialitiesData } = useQuery({
+    queryKey: ['public', 'specialities'],
+    queryFn: () => publicApi.getSpecialitiesList().then(r => r.data.data),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -974,7 +713,7 @@ function HomePage() {
             <div className="facility-info-card">
               <div className="facility-info-header">
                 <div className="facility-logo">
-                  <img src="/logo updated.png" alt="Pro Health Specialists"
+                  <img src="/logo.png" alt="Pro Health Specialists"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                 </div>
                 <div>
@@ -1026,16 +765,18 @@ function HomePage() {
             <h2 className="section-title" style={{ marginBottom: 0 }}>Specialized ENT <em>Treatments</em></h2>
             <Link className="btn-ghost" to="/services" style={{ fontSize: "0.85rem", padding: "0.55rem 1.1rem" }}>View All Specialities</Link>
           </div>
-          {/* Only the 5 image-backed services, one centred row */}
-          <div style={{ display: "flex", gap: "1.1rem", justifyContent: "center" }}>
-            {SERVICES.filter(s => s.img).map((s) => (
-              <Link className="service-card" key={s.name} to={`/services`}
+          {/* Display first 6 specialities with images */}
+          <div style={{ display: "flex", gap: "1.1rem", justifyContent: "center", flexWrap: "wrap" }}>
+            {(specialitiesData || []).slice(0, 6).map((spec: any) => (
+              <Link className="service-card" key={spec.id} to={`/specialities/${spec.slug}`}
                 style={{ textDecoration: "none", flex: "1 1 0", minWidth: 0, maxWidth: 220 }}>
-                <img src={s.img} alt={s.name} className="service-img"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                {spec.image && (
+                  <img src={spec.image} alt={spec.title} className="service-img"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                )}
                 <div className="service-body">
-                  <div className="service-name">{s.name}</div>
-                  <div className="service-desc">{s.desc}</div>
+                  <div className="service-name">{spec.title}</div>
+                  <div className="service-desc">{spec.description}</div>
                   <span className="service-link">Learn more</span>
                 </div>
               </Link>
@@ -1234,6 +975,12 @@ function AboutPage() {
    SPECIALITIES LISTING PAGE  (/services)
 ═══════════════════════════════════════════════════════════ */
 function ServicesPage() {
+  const { data: specialitiesData } = useQuery({
+    queryKey: ['public', 'specialities'],
+    queryFn: () => publicApi.getSpecialitiesList().then(r => r.data.data),
+    staleTime: 1000 * 60 * 5,
+  });
+
   return (
     <>
       <div style={{ paddingTop: 68 }}>
@@ -1247,21 +994,19 @@ function ServicesPage() {
             </p>
           </div>
         </div>
-
-        <section style={{ background: "var(--bg)" }}>
-          <div className="section-inner">
-            <div className="spec-list-grid">
-              {SPECIALITIES.map(s => (
-                <Link key={s.slug} to={`/speciality/${s.slug}`} className="spec-card">
-                  <div className="spec-card-name">{s.name}</div>
-                  <div className="spec-card-desc">{s.tagline}</div>
-                  <span className="spec-card-cta">Learn more →</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
       </div>
+      <section style={{ background: "var(--bg)" }}>
+        <div className="section-inner">
+          <div className="spec-list-grid">
+            {(specialitiesData || []).map((spec: any) => (
+              <Link key={spec.id} to={`/specialities/${spec.slug}`} className="spec-card">
+                  <div className="spec-card-name">{spec.title}</div>
+                  <div className="spec-card-desc">{spec.description}</div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <BookAppointmentCTA />
       <SiteFooter />
@@ -1274,7 +1019,21 @@ function ServicesPage() {
 ═══════════════════════════════════════════════════════════ */
 function SpecialityPage() {
   const { slug } = useParams<{ slug: string }>();
-  const spec = SPECIALITIES.find(s => s.slug === slug);
+  const { data: spec, isLoading } = useQuery({
+    queryKey: ['public', 'speciality', slug],
+    queryFn: () => publicApi.getSpeciality(slug!).then(r => r.data.data),
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  });
+
+  if (isLoading) {
+    return (
+      <div style={{ paddingTop: 120, textAlign: 'center', color: 'var(--text-muted)' }}>
+        Loading…
+      </div>
+    );
+  }
 
   if (!spec) return <Navigate to="/services" replace />;
 
@@ -1284,38 +1043,40 @@ function SpecialityPage() {
         <div className="page-hero-band">
           <div className="page-hero-inner">
             <Link to="/services" className="page-back">Back to Specialities</Link>
-            <h1 className="section-title">{spec.name}</h1>
+            <h1 className="section-title">{spec.title}</h1>
             <p style={{ fontSize: "1rem", color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 640, marginTop: "0.5rem" }}>
-              {spec.tagline}
+              {spec.description}
             </p>
           </div>
         </div>
 
+        {spec.image && (
+          <div style={{ textAlign: "center", padding: "2rem 0" }}>
+            <img 
+              src={spec.image} 
+              alt={spec.title}
+              style={{ 
+                maxWidth: "100%", 
+                height: "auto", 
+                borderRadius: "12px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+              }}
+            />
+          </div>
+        )}
+
         <section style={{ background: "var(--bg)" }}>
           <div className="section-inner">
             <div className="spec-detail-wrap">
-              <div className="spec-overview">{spec.overview}</div>
-
-              {spec.sections.map((sec, i) => (
-                <div className="spec-section" key={i}>
-                  <div className="spec-section-title">{sec.title}</div>
-                  {sec.items && (
-                    <ul className="spec-list">
-                      {sec.items.map((item, j) => <li key={j}>{item}</li>)}
-                    </ul>
-                  )}
-                  {sec.cards && (
-                    <div className="spec-treatment-grid">
-                      {sec.cards.map((card, j) => (
-                        <div className="spec-treatment-card" key={j}>
-                          <div className="spec-treatment-name">{card.name}</div>
-                          <div className="spec-treatment-desc">{card.desc}</div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+              <div
+                className="spec-overview rich-text"
+                style={{
+                  lineHeight: 1.7,
+                  fontSize: "1rem",
+                  color: "var(--text)",
+                }}
+                dangerouslySetInnerHTML={{ __html: tiptapToHtml(spec.content) }}
+              />
 
               <div style={{ marginTop: "2rem", display: "flex", gap: "0.875rem", flexWrap: "wrap" }}>
                 <a className="btn-primary" href="/book-appointment">Book a Consultation</a>
@@ -1336,24 +1097,34 @@ function SpecialityPage() {
    GALLERY PAGE
 ═══════════════════════════════════════════════════════════ */
 function GalleryPage() {
-  const [tab, setTab] = useState<"gallery" | "video" | "news">("gallery");
+  const { data: rawCategories = [] } = useQuery({
+    queryKey: ['public', 'media', 'categories'],
+    queryFn: () => publicApi.getMediaCategories().then(r => r.data.data as string[]),
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const CATEGORY_MAP: Record<string, string> = {
-    gallery: "Gallery Photos",
-    video:   "Videos",
-    news:    "News Clippings",
-  };
+  const allTabs = ['All', ...rawCategories];
+  const [activeTab, setActiveTab] = useState('All');
+
+  // If categories load and the active tab was removed, reset to All
+  useEffect(() => {
+    if (activeTab !== 'All' && rawCategories.length > 0 && !rawCategories.includes(activeTab)) {
+      setActiveTab('All');
+    }
+  }, [rawCategories, activeTab]);
 
   const { data: mediaData } = useQuery({
-    queryKey: ['public', 'media', tab],
+    queryKey: ['public', 'media', 'gallery', activeTab],
     queryFn: () => publicApi.getMedia({
-      category: CATEGORY_MAP[tab],
+      ...(activeTab !== 'All' ? { category: activeTab } : {}),
       limit: 100,
     }).then(r => r.data.data as any[]),
     staleTime: 1000 * 60 * 2,
   });
 
-  // mediaData is used directly in the grid below (preserves .type for video detection)
+  const isNewsTab = activeTab.toLowerCase().includes('news');
+  const fallback = CLINIC_PHOTOS.map((src: string) => ({ originalUrl: src, thumbnailUrl: src, type: "image", altText: "" }));
+  const items = (mediaData && mediaData.length > 0) ? mediaData : (activeTab === 'All' ? fallback : []);
 
   return (
     <>
@@ -1369,14 +1140,14 @@ function GalleryPage() {
         <section style={{ background: "#fff" }}>
           <div className="section-inner">
             <div className="gallery-tabs">
-              {(["gallery", "video", "news"] as const).map((k) => (
-                <button key={k} className={`gtab${tab === k ? " active" : ""}`} onClick={() => setTab(k)}>
-                  {k === "gallery" ? "Gallery Photos" : k === "video" ? "Video Gallery" : "News Clippings"}
+              {allTabs.map((cat) => (
+                <button key={cat} className={`gtab${activeTab === cat ? " active" : ""}`} onClick={() => setActiveTab(cat)}>
+                  {cat}
                 </button>
               ))}
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" }}>
-              {(mediaData && mediaData.length > 0 ? mediaData : (tab === "video" ? VIDEO_GALLERY : CLINIC_PHOTOS).map((src: string) => ({ originalUrl: src, thumbnailUrl: src, type: tab === "video" ? "video" : "image", altText: "" }))).map((m: any, i: number) => {
+              {items.map((m: any, i: number) => {
                 const src = m.originalUrl || m.thumbnailUrl || m;
                 const isVideo = m.type === "video";
                 return isVideo ? (
@@ -1396,8 +1167,8 @@ function GalleryPage() {
                   </a>
                 );
               })}
-              {/* PDF news clippings always shown in news tab */}
-              {tab === "news" && STATIC_PDF_NEWS.map((pdf, i) => (
+              {/* PDF news clippings shown alongside media when a "news" category is active */}
+              {isNewsTab && STATIC_PDF_NEWS.map((pdf, i) => (
                 <a key={`pdf-${i}`} href={pdf.href} target="_blank" rel="noopener noreferrer" className="pdf-card" download={false}>
                   <div className="pdf-card-icon" style={{ fontSize: "1rem", fontWeight: 700, letterSpacing: "0.05em", color: "var(--green)" }}>PDF</div>
                   <div className="pdf-card-name">{pdf.name}</div>
@@ -1762,7 +1533,7 @@ export default function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/services" element={<ServicesPage />} />
-                <Route path="/speciality/:slug" element={<SpecialityPage />} />
+                <Route path="/specialities/:slug" element={<SpecialityPage />} />
                 <Route path="/gallery" element={<GalleryPage />} />
                 <Route path="/articles" element={<ArticlesPage />} />
                 <Route path="/articles/:slug" element={<ArticleDetailPage />} />

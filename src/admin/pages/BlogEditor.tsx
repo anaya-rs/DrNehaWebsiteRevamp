@@ -137,7 +137,7 @@ export default function BlogEditor() {
       {/* Top bar */}
       <div className="flex items-center justify-between mb-6">
         <button onClick={() => navigate('/admin/blog')} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700">
-          <ArrowLeft size={15} /> Blog
+          <ArrowLeft size={15} /> Articles
         </button>
         <div className="flex items-center gap-3">
           <span className={`text-xs ${saveStatus === 'saving' ? 'text-amber-500' : saveStatus === 'saved' ? 'text-green-600' : 'text-gray-400'}`}>
